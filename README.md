@@ -5,4 +5,6 @@ DISCLAIMER: This readme.md is a demonstration and a host of the sanctuary. This 
 
 Subscribe for more: https://www.youtube.com/@PTOT2.0TheMasterThatIsCool275
 
-ANOTHER DISCLAIMER FROM WINDOWS 12 CONCEPT: Microsoft don't own the windows 12 project. This shold not be confused. Just For Fun. Do not send this to microsoft i warn you or this project wwill get lot of hate and will be banned. Made with AI. It's a lot better than the official one releasing sooner and unofficials.
+ANOTHER DISCLAIMER FROM WINDOWS 12 CONCEPT: Microsoft don't own the windows 12 project. This shold not be confused. Just For Fun. Do not send this to microsoft i warn you or this project will get lot of hate and will be banned. Made with AI. It's a lot better than the official one releasing sooner and unofficials.
+
+The repository demonstrates skills. games. operating systems. The limit is 1 gigabyte. Not resistable for personal files. Just for projects and extensions. That's how github was created. Focused on coding
