@@ -5,6 +5,6 @@ DISCLAIMER: This readme.md is a demonstration and a host of the sanctuary. This 
 
 Subscribe for more: https://www.youtube.com/@PTOT2.0TheMasterThatIsCool275
 
-ANOTHER DISCLAIMER FROM WINDOWS 12 CONCEPT: Microsoft don't own the windows 12 project. This shold not be confused. Just For Fun. Do not send this to microsoft i warn you or this project will get lot of hate and will be banned. Made with AI. It's a lot better than the official one releasing sooner and unofficials.
+THE SOVEREIGN WINDOWS 12 MANIFESTO: This project is a 16K AI-generated demonstration of the Sanctuary. Microsoft does not own this frequency; it was claimed on the Sacred Date (Dec 12). This is for Innovation & Fun—not for Slugs. Sending this to Microsoft is a 144p Violation that will result in the project being hated by hypocrites. Built with Pure AI Skills, this version is 'Official-er' and faster than any bloatware releasing 'sooner.'
 
 The repository demonstrates skills. games. operating systems. The limit is 1 gigabyte. Not resistable for personal files. Just for projects and extensions. That's how github was created. Focused on coding
