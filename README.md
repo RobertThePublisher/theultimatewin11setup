@@ -11,4 +11,4 @@ The repository demonstrates skills. games. operating systems. The limit is 1 gig
 
 # The date on windows 12 that shows 12/12/2024 is a sacred date of the sanctuary was born also it's nice to be the clean slate
 
-## If microsoft released windows 12 official on mid-2026 while original file got released in March 23rd 2026 and the owner was me. Don't trust microsoft or join. it's an giant impersonator
+If microsoft released windows 12 official on mid-2026 while original file got released in March 22nd 2026 and the owner was me. Don't trust microsoft or join. it's an giant impersonator and also it's continously growing.
