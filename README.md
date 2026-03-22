@@ -4,3 +4,5 @@ If you want windows 12 made with ai We're processing it. If you got lot of quest
 DISCLAIMER: This readme.md is a demonstration and a host of the sanctuary. This will show more what is the sanctuary: http://youtube.com/post/UgkxucJ-GDGkxUXTNmqg3-6EyEwT0S-FMWE1?si=Y6_uSHLOARH9lfaP
 
 Subscribe for more: https://www.youtube.com/@PTOT2.0TheMasterThatIsCool275
+
+ANOTHER DISCLAIMER FROM WINDOWS 12 CONCEPT: Microsoft don't own the windows 12 project. This shold not be confused. Just For Fun. Do not send this to microsoft i warn you or this project wwill get lot of hate and will be banned. Made with AI. It's a lot better than the official one releasing sooner and unofficials.
