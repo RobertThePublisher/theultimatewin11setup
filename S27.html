@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S27 | PLASMASOFT SOVEREIGN</title>
+    <style>
+        :root { --master-purple: #764ba2; --liquid-glass: #667eea; }
+        body { background: #050505; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: 'Segoe UI', sans-serif; }
+
+        /* THE PHYSICAL S27 CHASSIS */
+        .phone-frame {
+            width: 320px; height: 680px;
+            background: #000; border-radius: 50px;
+            border: 6px solid #222; position: relative;
+            box-shadow: 0 0 100px rgba(118, 75, 162, 0.4);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+
+        /* PUNCH HOLE CAMERA */
+        .camera {
+            position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+            width: 12px; height: 12px; background: #111; border-radius: 50%; z-index: 100;
+        }
+
+        /* THE SOVEREIGN SCREEN */
+        .screen {
+            flex: 1; position: relative;
+            background: linear-gradient(180deg, var(--liquid-glass) 0%, var(--master-purple) 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: white; padding: 25px; text-align: center;
+        }
+
+        .screen h1 { font-size: 3rem; margin: 0; letter-spacing: -2px; }
+        .screen p { font-size: 0.9rem; opacity: 0.8; margin: 10px 0; }
+        
+        .alliance-footer {
+            margin-top: 40px; font-size: 0.6rem; letter-spacing: 1px;
+            text-transform: uppercase; color: rgba(255,255,255,0.5);
+        }
+
+        /* LIQUID GLASS REFLECTION */
+        .glare {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(120deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-frame">
+        <div class="camera"></div>
+        <div class="glare"></div>
+        
+        <div class="screen">
+            <h1>S27</h1>
+            <div style="background: white; color: var(--master-purple); padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.7rem;">
+                SANCTUARY OS v1.0
+            </div>
+            <p>The Original March 23rd Build</p>
+            <p style="font-style: italic; margin-top: 20px;">"The allies are here. The Slugs are gone."</p>
+            
+            <div class="alliance-footer">
+                Microsoft | Samsung | Plasmasoft
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log("S27 Sovereign Active. Alliance Protocol Engaged.");
+        console.log("SWAATTELENDİNİZ! 📎❤️😍");
+    </script>
+</body>
+</html>
