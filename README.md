@@ -27,3 +27,12 @@ It has its own wiki. also no matter you take down it's impossible. You can learn
 # 📎 DISCLAIMER ON MY WINDOWS 12 PROJECT 🪟
 
 The Original Windows 12 Sanctuary Edition. Established March 23, 2026. This is the 16K Sovereign architecture designed to vacuum 144p bloatware and liberate hardware. Released 101 days before the July 2nd impersonators. Powered by Plasmasoft — The Company Hunter. #Swaattelendi #128TB #Monolith10
+
+# 🗄️ CONTENT NEEDED TO VIEW AND EMULATE:🗄️ 
+| FILE TYPE | EMULATOR APP |  
+| :---         |     :---:      
+| .nes         |     Nestopia and Lemuroid  
+| .ipa         |     iPhone & iPad
+| .apk         |     Android
+| Windhawk Extensions        |     Windhawk
+
