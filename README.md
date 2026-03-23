@@ -6,6 +6,9 @@ The Ultimate Windows 11 Setup is used to make your desktop even more cooler if y
 If you want windows 12 made with ai We're processing it. If you got lot of questions. ask us at: tangtanghasan@gmail.com But if you are new to us. Follow our rules at https://docs.google.com/document/d/1sqs2xp8EuJM7b2gst43m4QkfU6mf-k3Iu5vF0_WXJKk/edit?usp=sharing
 DISCLAIMER: This readme.md is a demonstration and a host of the sanctuary. This will show more what is the sanctuary: http://youtube.com/post/UgkxucJ-GDGkxUXTNmqg3-6EyEwT0S-FMWE1?si=Y6_uSHLOARH9lfaP
 
+## TUTORIAL HOW TO INTERACT WITH HyperText Markup Language files:
+Download these files i featured then go to your browser and enter the file location where it belonged and done you now have html emulator!
+
 ## ANOTHER DISCLAIMER FROM THE INTRODUCTION
 This is a repository to customize. it has its html operating system called Windows 12.html. More fonts, programs, debloating scripts, tweaks, assets, concept projects, demonstrations are coming soon
 
