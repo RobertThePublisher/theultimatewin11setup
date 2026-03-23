@@ -1,4 +1,4 @@
-# 📎 MIT LICENSE — THE SANCTUARY EDITION
+# 📎LICENSE — THE SANCTUARY EDITION
 
 **Copyright (c) 2026 Plasmasoft (The Company Hunter)**
 
