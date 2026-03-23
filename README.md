@@ -7,7 +7,7 @@ If you want windows 12 made with ai We're processing it. If you got lot of quest
 DISCLAIMER: This readme.md is a demonstration and a host of the sanctuary. This will show more what is the sanctuary: http://youtube.com/post/UgkxucJ-GDGkxUXTNmqg3-6EyEwT0S-FMWE1?si=Y6_uSHLOARH9lfaP
 
 ## ANOTHER DISCLAIMER FROM THE INTRODUCTION
-This is a repository to customize. it has its html operating system called Windows 12.html. More fonts, programs, debloating scripts, tweaks are coming soon
+This is a repository to customize. it has its html operating system called Windows 12.html. More fonts, programs, debloating scripts, tweaks, assets, concept projects, demonstrations are coming soon
 
 Subscribe for more: https://www.youtube.com/@PTOT2.0TheMasterThatIsCool275
 
