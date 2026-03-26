@@ -36,3 +36,6 @@ The Original Windows 12 Sanctuary Edition. Established March 23, 2026. This is t
 | .apk         |     Android
 | Windhawk Extensions        |     Windhawk
 
+# NEW SUB-REPOSITORIES FOUNDED FOR TWEAKS:
+## Remove Edge: https://github.com/ShadowWhisperer/Remove-MS-Edge
+
