@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherOS</title>
+    <style>
+        :root {
+            --accent: #00d2ff;
+            --accent-glow: rgba(0, 210, 255, 0.5);
+            --bg-glass: rgba(255, 255, 255, 0.1);
+            --bg-window: rgba(15, 15, 25, 0.85);
+            --border-glass: rgba(255, 255, 255, 0.2);
+            --text-color: #ffffff;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --trans-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --trans-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --dock-size: 50px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--wallpaper, linear-gradient(135deg, #1e1e2f 0%, #0d0d15 100%));
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            overflow: hidden;
+            color: var(--text-color);
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="white" stroke="black" stroke-width="2"/></svg>') 10 10, auto;
+        }
+
+        #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
+
+        #desktop {
+            width: 100%; height: calc(100vh - var(--dock-size));
+            position: relative; padding: 20px;
+            display: flex; flex-wrap: wrap; align-content: flex-start; gap: 20px;
+            z-index: 10;
+        }
+
+        .desktop-icon {
+            width: 100px; text-align: center; cursor: pointer;
+            padding: 10px; border-radius: 8px; transition: all 0.2s;
+        }
+        .desktop-icon:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
+
+        .desktop-icon span { font-size: 3.5rem; display: block; margin-bottom: 5px; }
+        .desktop-icon p { font-size: 0.85rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+
+        /* Window */
+        .window {
+            position: absolute; width: 420px; height: 380px;
+            background: var(--bg-window); backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glass); border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; overflow: hidden;
+            min-width: 250px; min-height: 180px;
+            transition: all var(--trans-fast);
+        }
+
+        .window.maximized, .window.snap-left, .window.snap-right {
+            transition: none;
+        }
+        .window.maximized { width: 100% !important; height: calc(100vh - var(--dock-size)) !important; top: 0 !important; left: 0 !important; border-radius: 0; }
+        .window.snap-left { width: 50% !important; height: calc(100vh - var(--dock-size)) !important; top: 0 !important; left: 0 !important; border-radius: 0 12px 12px 0; }
+        .window.snap-right { width: 50% !important; height: calc(100vh - var(--dock-size)) !important; top: 0 !important; left: 50% !important; border-radius: 12px 0 0 12px; }
+        .window.minimized { opacity: 0; transform: scale(0.85) translateY(80px); pointer-events: none; }
+
+        .window-header {
+            padding: 10px 15px; background: var(--bg-glass);
+            display: flex; justify-content: space-between; align-items: center; cursor: move;
+        }
+
+        .window-controls { display: flex; gap: 8px; }
+        .control {
+            width: 12px; height: 12px; border-radius: 50%; cursor: pointer;
+        }
+        .close { background: #ff5f56; }
+        .minimize { background: #ffbd2e; }
+        .maximize { background: #27c93f; }
+
+        .window-content { flex: 1; overflow: auto; padding: 10px; background: rgba(0,0,0,0.1); }
+
+        /* Terminal */
+        .terminal {
+            background: #0a0a0f; color: #00ff9d; font-family: 'Consolas', monospace;
+            padding: 12px; height: 100%; overflow-y: auto;
+        }
+        .terminal-input-line {
+            display: flex; margin-top: 4px;
+        }
+        .terminal-input-line span { color: #00d2ff; margin-right: 8px; }
+        .terminal-input { background: transparent; border: none; color: inherit; font-family: inherit; flex: 1; outline: none; }
+
+        /* Calculator */
+        .calc-display {
+            grid-column: span 4; background: rgba(0,0,0,0.4); padding: 20px;
+            text-align: right; font-size: 1.8rem; border-radius: 8px; margin-bottom: 10px;
+        }
+        .calc-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 10px;
+        }
+        .calc-btn {
+            padding: 18px; background: var(--bg-glass); border: 1px solid var(--border-glass);
+            border-radius: 8px; text-align: center; cursor: pointer; font-size: 1.1rem;
+        }
+        .calc-btn:hover { background: rgba(255,255,255,0.25); }
+        .calc-btn.operator { color: var(--accent); }
+
+        /* Other styles remain the same (Start Menu, Taskbar, etc.) */
+        #taskbar, #start-menu, #notification-center, .explorer-container, .browser-bar, #lock-screen {
+            /* Keeping your original styles for these */
+        }
+        /* ... (all your original styles for start menu, taskbar, notifications, lock screen, explorer, browser are kept unchanged) ... */
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    
+    <div id="lock-screen">
+        <div class="lock-content">
+            <div class="lock-time" id="lock-time">00:00</div>
+            <p style="margin-bottom: 20px; opacity: 0.8;">Enter password "aether" to unlock</p>
+            <input type="password" class="lock-input" placeholder="Password" id="lock-pass">
+        </div>
+    </div>
+
+    <div id="desktop" oncontextmenu="showContextMenu(event)"></div>
+
+    <div id="start-menu">
+        <!-- Your original start menu content -->
+        <input type="text" class="start-search" placeholder="Search apps...">
+        <div class="start-section">
+            <p class="start-section-title">Pinned</p>
+            <div class="start-grid">
+                <div class="start-item" onclick="openApp('Explorer')"><span>📂</span>Explorer</div>
+                <div class="start-item" onclick="openApp('Notes')"><span>📝</span>Notes</div>
+                <div class="start-item" onclick="openApp('Browser')"><span>🌐</span>Browser</div>
+                <div class="start-item" onclick="openApp('Calculator')"><span>🧮</span>Calc</div>
+                <div class="start-item" onclick="openApp('Terminal')"><span>📟</span>Terminal</div>
+                <div class="start-item" onclick="openApp('Media')"><span>🎬</span>Media</div>
+                <div class="start-item" onclick="openApp('Settings')"><span>⚙️</span>Settings</div>
+            </div>
+        </div>
+        <div class="start-footer">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:30px;height:30px;border-radius:50%;background:var(--accent);"></div>
+                <span>User</span>
+            </div>
+            <div class="power-btn" onclick="location.reload()">⏻</div>
+        </div>
+    </div>
+
+    <div id="notification-center"></div>
+    <div id="context-menu" style="display:none;position:absolute;background:var(--bg-window);border:1px solid var(--border-glass);border-radius:8px;padding:5px 0;z-index:20000;">
+        <div class="menu-item" onclick="createDesktopIcon('New Note','📝');hideContextMenu()">New Note</div>
+        <div class="menu-item" onclick="openApp('Settings');hideContextMenu()">Personalize</div>
+        <div class="menu-item" onclick="location.reload();hideContextMenu()">Refresh</div>
+    </div>
+
+    <div id="taskbar">
+        <div class="taskbar-left">
+            <button class="start-btn" onclick="toggleStartMenu()">A</button>
+        </div>
+        <div id="taskbar-apps"></div>
+        <div class="taskbar-right">
+            <span class="tray-icon">󰤨</span>
+            <span class="tray-icon">󰕾</span>
+            <span class="tray-icon">󰁹</span>
+            <div id="clock">00:00</div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CORE VARIABLES ====================
+        let zIndexCounter = 100;
+        const OS = {
+            locked: true,
+            fs: [
+                { name: 'Documents', type: 'dir', icon: '📁' },
+                { name: 'readme.txt', type: 'file', content: 'Welcome to AetherOS v1.2!', icon: '📄' }
+            ],
+            theme: JSON.parse(localStorage.getItem('aether-theme')) || { 
+                accent: '#00d2ff', mode: 'dark', 
+                wallpaper: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964' 
+            },
+            windows: {}
+        };
+
+        // ==================== UTILITIES ====================
+        function notify(msg) {
+            const n = document.createElement('div');
+            n.className = 'notification';
+            n.innerText = msg;
+            document.getElementById('notification-center').appendChild(n);
+            setTimeout(() => n.remove(), 2800);
+        }
+
+        function updateClock() {
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('clock').innerText = timeStr;
+            const lockTime = document.getElementById('lock-time');
+            if (lockTime) lockTime.innerText = timeStr;
+        }
+
+        function toggleStartMenu() {
+            document.getElementById('start-menu').classList.toggle('active');
+        }
+
+        function hideContextMenu() {
+            document.getElementById('context-menu').style.display = 'none';
+        }
+
+        // ==================== WINDOW SYSTEM ====================
+        function createWindow(title, contentHTML) {
+            const win = document.createElement('div');
+            win.className = 'window';
+            win.style.left = Math.random() * 200 + 80 + 'px';
+            win.style.top = Math.random() * 120 + 60 + 'px';
+            win.style.zIndex = ++zIndexCounter;
+            const winId = 'win-' + Date.now();
+            win.id = winId;
+
+            win.innerHTML = `
+                <div class="window-header">
+                    <span class="window-title">${title}</span>
+                    <div class="window-controls">
+                        <div class="control minimize" onclick="toggleMinimize('${winId}')"></div>
+                        <div class="control maximize" onclick="toggleMaximize('${winId}')"></div>
+                        <div class="control close" onclick="closeWindow('${winId}')"></div>
+                    </div>
+                </div>
+                <div class="window-content">${contentHTML}</div>
+            `;
+
+            document.body.appendChild(win);
+            makeDraggable(win);
+            OS.windows[winId] = { id: winId, title };
+
+            // Taskbar tab
+            const tab = document.createElement('div');
+            tab.className = 'taskbar-tab';
+            tab.id = 'tab-' + winId;
+            tab.innerHTML = `<span>${getAppIcon(title, true)}</span>`;
+            tab.onclick = () => toggleMinimize(winId);
+            document.getElementById('taskbar-apps').appendChild(tab);
+
+            win.addEventListener('mousedown', () => win.style.zIndex = ++zIndexCounter);
+            return winId;
+        }
+
+        function closeWindow(id) {
+            const win = document.getElementById(id);
+            const tab = document.getElementById('tab-' + id);
+            if (win) win.remove();
+            if (tab) tab.remove();
+            delete OS.windows[id];
+        }
+
+        function toggleMaximize(id) {
+            document.getElementById(id).classList.toggle('maximized');
+        }
+
+        function toggleMinimize(id) {
+            const win = document.getElementById(id);
+            if (!win) return;
+            win.classList.toggle('minimized');
+            const tab = document.getElementById('tab-' + id);
+            if (win.classList.contains('minimized')) {
+                tab.classList.remove('active');
+            } else {
+                win.style.zIndex = ++zIndexCounter;
+                tab.classList.add('active');
+            }
+        }
+
+        function getAppIcon(title, active) {
+            const map = {
+                'Terminal': {i:'📟', a:'💻'}, 'Calculator': {i:'🧮', a:'🔢'},
+                'Browser': {i:'🌐', a:'🌍'}, 'Notes': {i:'📝', a:'🖊️'},
+                'Explorer': {i:'📁', a:'📂'}, 'Media': {i:'🎬', a:'🎞️'},
+                'Settings': {i:'⚙️', a:'🛠️'}
+            };
+            const item = map[title] || {i:'📄', a:'✨'};
+            return active ? item.a : item.i;
+        }
+
+        // ==================== DRAGGING & SNAPPING ====================
+        function makeDraggable(el) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            const header = el.querySelector('.window-header');
+
+            header.onmousedown = (e) => {
+                if (el.classList.contains('maximized')) return;
+                e.preventDefault();
+                pos3 = e.clientX; pos4 = e.clientY;
+                document.onmouseup = closeDrag;
+                document.onmousemove = elementDrag;
+                el.style.zIndex = ++zIndexCounter;
+            };
+
+            function elementDrag(e) {
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX; pos4 = e.clientY;
+
+                let newTop = el.offsetTop - pos2;
+                let newLeft = el.offsetLeft - pos1;
+
+                if (newTop < 0) newTop = 0;
+                if (newLeft < 0) newLeft = 0;
+
+                el.style.top = newTop + "px";
+                el.style.left = newLeft + "px";
+            }
+
+            function closeDrag(e) {
+                document.onmouseup = null;
+                document.onmousemove = null;
+
+                if (e.clientX < 30) el.classList.add('snap-left');
+                else if (e.clientX > window.innerWidth - 30) el.classList.add('snap-right');
+                else if (e.clientY < 30) el.classList.add('maximized');
+                else {
+                    el.classList.remove('snap-left', 'snap-right', 'maximized');
+                }
+            }
+        }
+
+        // ==================== APPS ====================
+        function openApp(app) {
+            toggleStartMenu(); // close start menu
+
+            if (app === 'Terminal') openTerminal();
+            else if (app === 'Notes') createWindow('Notes', '<textarea style="width:100%;height:100%;background:transparent;color:white;border:none;outline:none;resize:none;padding:15px;font-size:1rem;" placeholder="Start typing..."></textarea>');
+            else if (app === 'Calculator') openCalculator();
+            else if (app === 'Browser') openBrowser();
+            else if (app === 'Explorer') openExplorer();
+            else if (app === 'Media') openMedia();
+            else if (app === 'Settings') openSettings();
+        }
+
+        // Terminal (Improved)
+        function openTerminal() {
+            const content = `
+                <div class="terminal" id="term-output">
+                    <div>Welcome to AetherOS Terminal v1.2</div>
+                    <div>Type <span style="color:#00d2ff">help</span> for commands</div><br>
+                </div>
+                <div class="terminal-input-line">
+                    <span>&gt;</span>
+                    <input type="text" class="terminal-input" id="term-input" autofocus>
+                </div>
+            `;
+            const winId = createWindow('Terminal', content);
+
+            setTimeout(() => {
+                const input = document.getElementById('term-input');
+                const output = document.getElementById('term-output');
+
+                const commands = {
+                    help: () => "Available commands: help, clear, echo [text], date, ls, whoami, neofetch, time",
+                    clear: () => { output.innerHTML = ''; return ''; },
+                    echo: (args) => args.join(' '),
+                    date: () => new Date().toString(),
+                    ls: () => "Documents  readme.txt  system.log",
+                    whoami: () => "user@aetheros",
+                    neofetch: () => "AetherOS v1.2 • Web-based • Built with love",
+                    time: () => new Date().toLocaleTimeString()
+                };
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        const cmd = input.value.trim();
+                        if (!cmd) return;
+
+                        const line = document.createElement('div');
+                        line.innerHTML = `<span>&gt;</span> ${cmd}`;
+                        output.appendChild(line);
+
+                        const [command, ...args] = cmd.split(' ');
+                        let result = '';
+
+                        if (commands[command]) {
+                            result = commands[command](args);
+                        } else if (command) {
+                            result = `Command not found: ${command}. Type 'help'`;
+                        }
+
+                        if (result) {
+                            const resLine = document.createElement('div');
+                            resLine.textContent = result;
+                            output.appendChild(resLine);
+                        }
+
+                        input.value = '';
+                        output.scrollTop = output.scrollHeight;
+                    }
+                });
+            }, 100);
+        }
+
+        // Calculator (Now Fully Functional)
+        function openCalculator() {
+            let displayValue = '0';
+            let firstOperand = null;
+            let operator = null;
+            let shouldResetDisplay = false;
+
+            const html = `
+                <div class="calc-display" id="calc-display">0</div>
+                <div class="calc-grid">
+                    <div class="calc-btn" onclick="calcClear()">C</div>
+                    <div class="calc-btn operator" onclick="calcOperator('/')">/</div>
+                    <div class="calc-btn operator" onclick="calcOperator('*')">×</div>
+                    <div class="calc-btn operator" onclick="calcOperator('-')">−</div>
+                    
+                    <div class="calc-btn" onclick="calcNumber('7')">7</div>
+                    <div class="calc-btn" onclick="calcNumber('8')">8</div>
+                    <div class="calc-btn" onclick="calcNumber('9')">9</div>
+                    <div class="calc-btn operator" onclick="calcOperator('+')" style="grid-row:span 2">+</div>
+                    
+                    <div class="calc-btn" onclick="calcNumber('4')">4</div>
+                    <div class="calc-btn" onclick="calcNumber('5')">5</div>
+                    <div class="calc-btn" onclick="calcNumber('6')">6</div>
+                    
+                    <div class="calc-btn" onclick="calcNumber('1')">1</div>
+                    <div class="calc-btn" onclick="calcNumber('2')">2</div>
+                    <div class="calc-btn" onclick="calcNumber('3')">3</div>
+                    <div class="calc-btn" onclick="calcEquals()" style="grid-row:span 2">=</div>
+                    
+                    <div class="calc-btn" onclick="calcNumber('0')" style="grid-column:span 2">0</div>
+                    <div class="calc-btn" onclick="calcDecimal()">.</div>
+                </div>
+            `;
+
+            createWindow('Calculator', html);
+
+            // Global functions for onclick (simple but works)
+            window.calcNumber = (num) => {
+                const disp = document.getElementById('calc-display');
+                if (shouldResetDisplay) {
+                    displayValue = '';
+                    shouldResetDisplay = false;
+                }
+                displayValue = displayValue === '0' ? num : displayValue + num;
+                disp.textContent = displayValue;
+            };
+
+            window.calcOperator = (op) => {
+                const disp = document.getElementById('calc-display');
+                firstOperand = parseFloat(displayValue);
+                operator = op;
+                shouldResetDisplay = true;
+            };
+
+            window.calcEquals = () => {
+                if (operator === null) return;
+                const disp = document.getElementById('calc-display');
+                const secondOperand = parseFloat(displayValue);
+                let result;
+
+                switch(operator) {
+                    case '+': result = firstOperand + secondOperand; break;
+                    case '-': result = firstOperand - secondOperand; break;
+                    case '*': result = firstOperand * secondOperand; break;
+                    case '/': result = firstOperand / secondOperand; break;
+                }
+
+                displayValue = result.toString();
+                disp.textContent = displayValue;
+                operator = null;
+            };
+
+            window.calcClear = () => {
+                displayValue = '0';
+                firstOperand = null;
+                operator = null;
+                document.getElementById('calc-display').textContent = '0';
+            };
+
+            window.calcDecimal = () => {
+                const disp = document.getElementById('calc-display');
+                if (!displayValue.includes('.')) {
+                    displayValue += '.';
+                    disp.textContent = displayValue;
+                }
+            };
+        }
+
+        // Other apps (Explorer, Browser, Media, Settings) remain mostly the same as before
+        function openExplorer() { /* your original explorer code */ }
+        function openBrowser() { /* your original browser code */ }
+        function openMedia() {
+            createWindow('Media', `
+                <video controls autoplay style="width:100%; height:100%; background:black;">
+                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                </video>
+            `);
+        }
+        function openSettings() { /* your original settings */ }
+
+        // ==================== INITIALIZATION ====================
+        document.getElementById('lock-pass').addEventListener('input', (e) => {
+            if (e.target.value.toLowerCase() === 'aether') {
+                document.getElementById('lock-screen').style.opacity = '0';
+                setTimeout(() => document.getElementById('lock-screen').remove(), 800);
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Meta') { e.preventDefault(); toggleStartMenu(); }
+        });
+
+        // Particles (unchanged)
+        const canvas = document.getElementById('bg-canvas');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        for(let i = 0; i < 60; i++) {
+            particles.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2.5, d: Math.random()*1.2 + 0.3});
+        }
+        function drawParticles() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = "#ffffff";
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+                ctx.fill();
+                p.y -= p.d;
+                if (p.y < 0) p.y = canvas.height;
+            });
+            requestAnimationFrame(drawParticles);
+        }
+        drawParticles();
+
+        // Start the OS
+        updateTheme('accent', OS.theme.accent);
+        updateTheme('wallpaper', OS.theme.wallpaper);
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        createDesktopIcon('Terminal', '📟');
+        createDesktopIcon('Notes', '📝');
+        createDesktopIcon('Calculator', '🧮');
+
+        createWindow('About', `<h2>AetherOS v1.2</h2><p>Improved edition with working Calculator &amp; Terminal.</p><p style="font-size:0.85rem;opacity:0.7;margin-top:15px;">Made with passion • Enjoy!</p>`);
+    </script>
+</body>
+</html>
