@@ -405,6 +405,30 @@
 
         // Calculator (Now Fully Functional)
         function openCalculator() {
+    const winId = createWindow('Calculator', `
+        <div class="calc-display">0</div>
+        <div class="calc-grid">
+            <!-- all calculator buttons -->
+        </div>
+    `);
+
+    const win = document.getElementById(winId);
+    const display = win.querySelector('.calc-display');
+    const buttons = win.querySelectorAll('.calc-btn');
+
+    let displayValue = '0';
+    let firstOperand = null;
+    let operator = null;
+    let shouldReset = false;
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const action = btn.dataset.action;
+            // …calculator logic…
+            display.textContent = displayValue;
+        });
+    });
+}
             let displayValue = '0';
             let firstOperand = null;
             let operator = null;
