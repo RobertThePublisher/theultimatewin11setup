@@ -403,62 +403,89 @@
             }, 100);
         }
 
-        // Calculator (Now Fully Functional)
         function openCalculator() {
-    const winId = createWindow('Calculator', `
-        <div class="calc-display">0</div>
-        <div class="calc-grid">
-            <!-- all calculator buttons -->
-        </div>
-    `);
+    // Create the calculator window with HTML buttons
+    const winId = createWindow("Calculator", 
+        "<div class='calc-display'>0</div>" +
+        "<div class='calc-grid'>" +
+            "<div class='calc-btn' data-action='clear'>C</div>" +
+            "<div class='calc-btn operator' data-action='/'>/</div>" +
+            "<div class='calc-btn operator' data-action='*'>×</div>" +
+            "<div class='calc-btn operator' data-action='-'>−</div>" +
 
+            "<div class='calc-btn' data-action='7'>7</div>" +
+            "<div class='calc-btn' data-action='8'>8</div>" +
+            "<div class='calc-btn' data-action='9'>9</div>" +
+            "<div class='calc-btn operator' data-action='+' style='grid-row:span 2'>+</div>" +
+
+            "<div class='calc-btn' data-action='4'>4</div>" +
+            "<div class='calc-btn' data-action='5'>5</div>" +
+            "<div class='calc-btn' data-action='6'>6</div>" +
+
+            "<div class='calc-btn' data-action='1'>1</div>" +
+            "<div class='calc-btn' data-action='2'>2</div>" +
+            "<div class='calc-btn' data-action='3'>3</div>" +
+            "<div class='calc-btn operator' data-action='=' style='grid-row:span 2'>=</div>" +
+
+            "<div class='calc-btn' data-action='0' style='grid-column:span 2'>0</div>" +
+            "<div class='calc-btn' data-action='.'>.</div>" +
+        "</div>"
+    );
+
+    // Get references
     const win = document.getElementById(winId);
-    const display = win.querySelector('.calc-display');
-    const buttons = win.querySelectorAll('.calc-btn');
+    const display = win.querySelector(".calc-display");
+    const buttons = win.querySelectorAll(".calc-btn");
 
-    let displayValue = '0';
+    // Scoped variables for this calculator window only
+    let displayValue = "0";
     let firstOperand = null;
     let operator = null;
     let shouldReset = false;
 
+    // Button click logic
     buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener("click", () => {
             const action = btn.dataset.action;
-            // …calculator logic…
+            if (!action) return;
+
+            // Numbers
+            if (!isNaN(action)) {
+                if (shouldReset) { displayValue = ""; shouldReset = false; }
+                displayValue = displayValue === "0" ? action : displayValue + action;
+            }
+            // Decimal
+            else if (action === ".") {
+                if (!displayValue.includes(".")) displayValue += ".";
+            }
+            // Clear
+            else if (action === "clear") {
+                displayValue = "0"; firstOperand = null; operator = null;
+            }
+            // Equals
+            else if (action === "=") {
+                if (operator && firstOperand !== null) {
+                    const secondOperand = parseFloat(displayValue);
+                    switch (operator) {
+                        case "+": displayValue = (firstOperand + secondOperand).toString(); break;
+                        case "-": displayValue = (firstOperand - secondOperand).toString(); break;
+                        case "*": displayValue = (firstOperand * secondOperand).toString(); break;
+                        case "/": displayValue = (firstOperand / secondOperand).toString(); break;
+                    }
+                    operator = null; firstOperand = null; shouldReset = true;
+                }
+            }
+            // Operators
+            else {
+                firstOperand = parseFloat(displayValue);
+                operator = action;
+                shouldReset = true;
+            }
+
             display.textContent = displayValue;
         });
     });
 }
-            let displayValue = '0';
-            let firstOperand = null;
-            let operator = null;
-            let shouldResetDisplay = false;
-
-            const html = `
-                <div class="calc-display" id="calc-display">0</div>
-                <div class="calc-grid">
-                    <div class="calc-btn" onclick="calcClear()">C</div>
-                    <div class="calc-btn operator" onclick="calcOperator('/')">/</div>
-                    <div class="calc-btn operator" onclick="calcOperator('*')">×</div>
-                    <div class="calc-btn operator" onclick="calcOperator('-')">−</div>
-                    
-                    <div class="calc-btn" onclick="calcNumber('7')">7</div>
-                    <div class="calc-btn" onclick="calcNumber('8')">8</div>
-                    <div class="calc-btn" onclick="calcNumber('9')">9</div>
-                    <div class="calc-btn operator" onclick="calcOperator('+')" style="grid-row:span 2">+</div>
-                    
-                    <div class="calc-btn" onclick="calcNumber('4')">4</div>
-                    <div class="calc-btn" onclick="calcNumber('5')">5</div>
-                    <div class="calc-btn" onclick="calcNumber('6')">6</div>
-                    
-                    <div class="calc-btn" onclick="calcNumber('1')">1</div>
-                    <div class="calc-btn" onclick="calcNumber('2')">2</div>
-                    <div class="calc-btn" onclick="calcNumber('3')">3</div>
-                    <div class="calc-btn" onclick="calcEquals()" style="grid-row:span 2">=</div>
-                    
-                    <div class="calc-btn" onclick="calcNumber('0')" style="grid-column:span 2">0</div>
-                    <div class="calc-btn" onclick="calcDecimal()">.</div>
-                </div>
             `;
 
             createWindow('Calculator', html);
